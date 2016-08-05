@@ -17,25 +17,29 @@ public class Handler : IHttpHandler
     
     public void ProcessRequest(HttpContext context)
     {
-        context.Response.ContentType = "text/plain";
-        string picUrl = "https://z.hbyoubi.com:16919/SelfOpenAccount/image.jsp?" + GetTimestamp();
-        var response = CreateGetHttpResponse(picUrl, cookies);
-        Stream stream = response.GetResponseStream();
-        var fileName = Guid.NewGuid() + ".jpeg";
-        FileStream fs = File.Create(Path.Combine(context.Server.MapPath("/yzm"), fileName));
-        long length = response.ContentLength;
-        int i = 0;
-        do
+        var method = context.Request["method"];
+        if (method == "getPic")
         {
-            byte[] buffer = new byte[1024];
+            context.Response.ContentType = "text/plain";
+            string picUrl = "https://z.hbyoubi.com:16919/SelfOpenAccount/image.jsp?" + GetTimestamp();
+            var response = CreateGetHttpResponse(picUrl, cookies);
+            Stream stream = response.GetResponseStream();
+            var fileName = Guid.NewGuid() + ".jpeg";
+            FileStream fs = File.Create(Path.Combine(context.Server.MapPath("/yzm"), fileName));
+            long length = response.ContentLength;
+            int i = 0;
+            do
+            {
+                byte[] buffer = new byte[1024];
 
-            i = stream.Read(buffer, 0, 1024);
+                i = stream.Read(buffer, 0, 1024);
 
-            fs.Write(buffer, 0, i);
+                fs.Write(buffer, 0, i);
 
-        } while (i > 0);
-        fs.Close();
-        context.Response.Write(fileName);
+            } while (i > 0);
+            fs.Close();
+            context.Response.Write(fileName);
+        }
     }
 
     private string GetTimestamp()

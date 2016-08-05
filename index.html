@@ -30,7 +30,7 @@
         }
         $(function () {
             $("#btn").click(function () {
-                $.post("Handlers/Handler.ashx", function (img) {
+                $.post("Handlers/Handler.ashx", { method: "getPic" }, function (img) {
                     $("#img").attr("src", "/yzm/"+img);
                 });
             });
