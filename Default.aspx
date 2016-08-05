@@ -137,11 +137,14 @@
 
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
 
+                var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
+
                 var formData = new FormData();
 
                 for (var i = 0; i < filesToUpload.length; i++) {
                     formData.append("attach", filesToUpload[i]);
                 }
+                formData.append("method", "dataInfo");
                 //添加参数
                 //   name: this.name,
                 formData.append('name', name);
@@ -189,6 +192,30 @@
             formData.append('yanzhengma', num);
                 //   ck: 'on'
             formData.append('ck', 'on');
+
+
+            $.ajax({
+                url: "Handlers/Handler.ashx",
+                data: formData,
+                dataType: "html",
+                type: "POST",
+                /**
+                 * 必须false才会避开jQuery对 formdata 的默认处理
+                 * XMLHttpRequest会对 formdata 进行正确的处理
+                 */
+                processData: false,
+                /**
+                 *必须false才会自动加上正确的Content-Type
+                 */
+                contentType: false,
+                success: function (data) {
+                    alert("ssss");
+                },
+                error: function (data) {
+                    alert("error:" + data.responseText);
+                }
+            });
+            return false;
 
             $.ajax({
                 url: url,

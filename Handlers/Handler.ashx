@@ -40,6 +40,12 @@ public class Handler : IHttpHandler
             fs.Close();
             context.Response.Write(fileName);
         }
+        else if (method == "dataInfo")
+        {
+            var name = context.Request["name"];
+            HttpPostedFile files = context.Request.Files["attach"];
+        }
+
     }
 
     private string GetTimestamp()
@@ -164,4 +170,86 @@ public class Handler : IHttpHandler
         }
         return response;
     }
+
+    //public HttpWebResponse CreatePostHttpResponseWithFile(string url, IDictionary<string, string> parameters,FileStream fs,string fileParam,string fileName,string fileContentType, CookieCollection cookies)
+    //{
+    //    HttpWebRequest request = null;
+    //    //如果是发送HTTPS请求  
+    //    if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
+    //    {
+    //        ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
+    //        request = WebRequest.Create(url) as HttpWebRequest;
+    //        request.ProtocolVersion = HttpVersion.Version10;
+    //    }
+    //    else
+    //    {
+    //        request = WebRequest.Create(url) as HttpWebRequest;
+    //    }
+    //    string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
+    //    byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
+    //    request.Method = "POST";
+    //    request.ContentType = "multipart/form-data; boundary=" + boundary;
+    //    request.KeepAlive = true;
+    //    if (cookies != null)
+    //    {
+    //        request.CookieContainer = new CookieContainer();
+    //        request.CookieContainer.Add(cookies);
+    //    }
+    //    //发送POST数据  
+    //    Stream rs = request.GetRequestStream();
+
+    //    string formdataTemplate = "Content-Disposition: form-data; name=\"{0}\"\r\n\r\n{1}";
+    //    foreach (string key in parameters.Keys)
+    //    {
+    //        rs.Write(boundarybytes, 0, boundarybytes.Length);
+    //        string formitem = string.Format(formdataTemplate, key, parameters[key]);
+    //        byte[] formitembytes = System.Text.Encoding.UTF8.GetBytes(formitem);
+    //        rs.Write(formitembytes, 0, formitembytes.Length);
+    //    }
+    //    rs.Write(boundarybytes, 0, boundarybytes.Length);
+
+
+    //    string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
+    //    string header = string.Format(headerTemplate, fileParam, fileName, fileContentType);
+    //    byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
+    //    rs.Write(headerbytes, 0, headerbytes.Length);
+
+        
+    //    FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+    //    byte[] buffer = new byte[4096];
+    //    int bytesRead = 0;
+    //    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+    //    {
+    //        rs.Write(buffer, 0, bytesRead);
+    //    }
+    //    fileStream.Close();
+
+    //    byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
+    //    rs.Write(trailer, 0, trailer.Length);
+    //    rs.Close();
+
+    //    WebResponse wresp = null;
+
+    //    try
+    //    {
+    //        wresp = request.GetResponse();
+    //        Stream stream2 = wresp.GetResponseStream();
+    //        StreamReader reader2 = new StreamReader(stream2);
+
+    //        result = reader2.ReadToEnd();
+    //    }
+    //    catch (Exception)
+    //    {
+    //        if (wresp != null)
+    //        {
+    //            wresp.Close();
+    //            wresp = null;
+    //        }
+    //    }
+    //    finally
+    //    {
+    //        request = null;
+    //    }
+
+    //}
 }
