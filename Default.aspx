@@ -48,7 +48,7 @@
                 </div>
                 <div class="row">
                     <label for="cardPhoto" class="col-xs-4 formLabel">身份证正面照</label>
-                    <a href="#" class="btn btn-primary btn-sm col-xs-8" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
+                    <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
                 </div>
                 <div class="row">
@@ -143,6 +143,7 @@
     <script src="Scripts/bootstrap.min.js"></script>
     <script src="Scripts/select2.min.js"></script>
     <script src="Scripts/zh-CN.js"></script>
+    <script src="Scripts/notify.min.js"></script>
     <script>
         //开户行
         var bankId;
@@ -159,7 +160,6 @@
                 $("#captcha").attr("src", "/yzm/" + img);
             });
         }
-
         $(function () {
             img = $("#captcha");
             refreshCaptcha();
@@ -198,7 +198,12 @@
                     return false;
                 }
                 if (!brokerId) {
-                    $("#brokerSelect").notify("营业部不能为空!", { position: "bottom center" });
+                    $("#select2-brokerSelect-container").notify("营业部不能为空!", { position: "bottom center" });
+                    return false;
+                }
+                if (!$("#files").val())
+                {
+                    $("#btnSelect").notify("请上传身份证正面照!", { position: "bottom center" });
                     return false;
                 }
                 var num = $.trim($("#num").val());
@@ -282,9 +287,10 @@
                     contentType: false,
                     success: function (data) {
                         data = $.parseJSON(data);
+                        debugger;
                         if (data.isSuccess == "0") {
                             //报错了
-                            alert(data.msg);
+                            $("#btnSubmit").notify(data.msg,{ position: "bottom center" });
                             $("#tradePage").hide();
                             $("#myForm").show();
                         }
@@ -305,7 +311,8 @@
                         }
                     },
                     error: function (data) {
-                        alert("error:" + data.responseText);
+                        //alert("error:" + data.responseText);
+                        $.notify("error:" + data.responseText)
                     }
                 });
             });
