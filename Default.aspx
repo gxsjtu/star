@@ -160,7 +160,12 @@
 
         function refreshCaptcha() {
             $.post("Handlers/Handler.ashx", { method: "getPic" }, function (img) {
-                $("#captcha").attr("src", "/yzm/" + img);
+                if (img != "获取验证码失败！") {
+                    $("#captcha").attr("src", "/yzm/" + img);
+                }
+                else {
+                    $("#captcha").notify("获取验证码失败!", { position: "bottom center" });
+                }
             });
         }
         $(function () {
@@ -307,6 +312,7 @@
                                 $("#tradLX").text(data.lx);
                                 $("#tradAddress").text(data.address);
                                 $("#tradePage").show();
+                                filesToUpload = [];//清空图片数组
                             }
                         },
                         error: function (data) {
@@ -353,6 +359,8 @@
                         var resizedImage = dataURLToBlob(dataUrl);
                         var myFile = blobToFile(resizedImage, file.name);
                         filesToUpload.push(myFile);
+                        canvas = null;
+                        image = null;
                     };
                 };
             }
@@ -382,7 +390,7 @@
             return new Blob([uInt8Array], { type: contentType });
         }
 
-        function blobToFile(b, fileName) {
+        function _blobToFile(b, fileName) {
             b.lastModifiedDate = new Date();
             b.name = fileName;
             return b;

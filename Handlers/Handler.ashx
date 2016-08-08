@@ -29,18 +29,30 @@ public class Handler : IHttpHandler
             Stream stream = response.GetResponseStream();
             var fileName = Guid.NewGuid() + ".jpeg";
             FileStream fs = File.Create(Path.Combine(context.Server.MapPath("/yzm"), fileName));
-            long length = response.ContentLength;
-            int i = 0;
-            do
+            try
             {
-                byte[] buffer = new byte[1024];
+                long length = response.ContentLength;
+                int i = 0;
+                do
+                {
+                    byte[] buffer = new byte[1024];
 
-                i = stream.Read(buffer, 0, 1024);
+                    i = stream.Read(buffer, 0, 1024);
 
-                fs.Write(buffer, 0, i);
+                    fs.Write(buffer, 0, i);
 
-            } while (i > 0);
-            fs.Close();
+                } while (i > 0);
+            }
+            catch (Exception)
+            {
+                context.Response.Write("获取验证码失败！");
+                context.Response.End();
+            }
+            finally
+            {
+                fs.Close();
+                response.Close();
+            }
             for (int j = 0; j < cookies.Count; j++)
             {
                 context.Response.Cookies.Add(new HttpCookie(cookies[j].Name, cookies[j].Value));
@@ -114,13 +126,30 @@ public class Handler : IHttpHandler
             }
 
             HttpWebResponse response = CreatePostHttpResponseWithFile(url, parameters, files, "attach", cookies, "z.hbyoubi.com");
-
-            Stream stream = response.GetResponseStream();   //获取响应的字符串流  
-            StreamReader sr = new StreamReader(stream); //创建一个stream读取流  
-            string html = sr.ReadToEnd();   //从头读到尾
-            sr.Close();
-            stream.Close();
-
+            string html = "";
+            Stream stream = null;
+            StreamReader sr = null;
+            try
+            {
+                stream = response.GetResponseStream();   //获取响应的字符串流  
+                sr = new StreamReader(stream); //创建一个stream读取流  
+                html = sr.ReadToEnd();   //从头读到尾
+                
+            }
+            catch (Exception)
+            {
+                var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！" };
+                context.Response.Write(GetResultStr(openAccountError));
+                context.Response.End();
+            }
+            finally
+            {
+                if(sr!=null)
+                    sr.Close();
+                if(stream!=null)
+                    stream.Close();
+                response.Close();
+            }
 
             if (html.IndexOf("交易会员入市协议") != -1)
             {
@@ -144,11 +173,24 @@ public class Handler : IHttpHandler
                 parameters.Add("brokerId1", brokerageid);
                 parameters.Add("ck", ck);
                 response = CreatePostHttpResponse(url, parameters, cookies, "z.hbyoubi.com");
-                stream = response.GetResponseStream();
-                sr = new StreamReader(stream);
-                html = sr.ReadToEnd();
-                sr.Close();
-                stream.Close();
+                try
+                {
+                    stream = response.GetResponseStream();
+                    sr = new StreamReader(stream);
+                    html = sr.ReadToEnd();
+                }
+                catch (Exception)
+                {
+                    var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！" };
+                    context.Response.Write(GetResultStr(openAccountError));
+                    context.Response.End();
+                }
+                finally
+                {
+                    sr.Close();
+                    stream.Close();
+                    response.Close();
+                }
                 int tradIndex = -1;
                 tradIndex = html.IndexOf("<td>交易账号</td>");
                 OpenAccountClass openAccountTrade;
