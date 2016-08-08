@@ -213,11 +213,8 @@
                 }
 
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
-
                 var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
-
                 var formData = new FormData();
-
                 for (var i = 0; i < filesToUpload.length; i++) {
                     formData.append("attach", filesToUpload[i]);
                 }
@@ -270,7 +267,6 @@
                 //   ck: 'on'
                 formData.append('ck', 'on');
 
-
                 $.ajax({
                     url: "Handlers/Handler.ashx",
                     data: formData,
@@ -297,7 +293,6 @@
                         else {
                             $(document).attr("title","网上开户注册完成");
                             $("#myForm").hide();
-
                             $("#tradName").text(data.name);
                             $("#tradCardNo").text(data.cardNumber);
                             $("#tradNo").text(data.tradeNo);
@@ -306,13 +301,11 @@
                             $("#tradBH").text(data.jgbh);
                             $("#tradLX").text(data.lx);
                             $("#tradAddress").text(data.address);
-
                             $("#tradePage").show();
                         }
                     },
                     error: function (data) {
-                        //alert("error:" + data.responseText);
-                        $.notify("error:" + data.responseText)
+                        $("#btnSubmit").notify("error:" + data.responseText)
                     }
                 });
             });
