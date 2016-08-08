@@ -289,6 +289,7 @@
                             $("#myForm").show();
                         }
                         else {
+                            $(document).attr("title","网上开户注册完成");
                             $("#myForm").hide();
 
                             $("#tradName").text(data.name);
