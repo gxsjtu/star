@@ -11,25 +11,27 @@
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/select2.min.css" rel="stylesheet" />
     <link href="Styles/style.css" rel="stylesheet" />
+    <script data-pace-options='{ "ajax": true }' src="Content/pace-1.0.2/pace.min.js"></script>
+    <link href="Content/pace-1.0.2/themes/blue/pace-theme-barber-shop.css" rel="stylesheet" />
 </head>
 <body>
     <form runat="server">
         <div class="container">
             <div id="myForm" style="margin-top: 20px;">
                 <div class="row">
-                    <label for="name" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">姓名</label>
+                    <label for="name" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">姓名</label>
                     <input type="text" id="name" name="name" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="phone" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">手机号码</label>
+                    <label for="phone" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">手机号码</label>
                     <input type="number" id="phone" name="phone" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="cardNo" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">身份证号码</label>
+                    <label for="cardNo" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证号码</label>
                     <input type="text" id="cardNo" name="cardNo" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="bankName" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">开户银行</label>
+                    <label for="bankName" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">开户银行</label>
                     <select id="bankSelect" name="bankSelect" class="form-control col-xs-8" style="width: 66.6%;">
                         <option value="10" selected="selected">工商银行</option>
                         <option value="18">民生银行</option>
@@ -37,17 +39,17 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label for="accountNo" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">银行账号</label>
+                    <label for="accountNo" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">银行账号</label>
                     <input type="number" id="accountNo" name="accountNo" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="brokerSelect" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">营业部</label>
+                    <label for="brokerSelect" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">营业部</label>
                     <select id="brokerSelect" name="brokerSelect" class="form-control col-xs-8" style="width: 66.6%;">
                         <% =brokerSelectDatas %>
                     </select>
                 </div>
                 <div class="row">
-                    <label for="cardPhoto" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">身份证正面照<span id="isUploaded" style="display:none;color:#fe8f5e;position:absolute;right:-20px;">√</span></label>
+                    <label for="cardPhoto" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证正面照<span id="isUploaded" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
                 </div>
@@ -95,7 +97,7 @@
                         <div class="col-xs-4">
                             交易账号
                         </div>
-                        <div class="col-xs-8" id="tradNo" style="color:red;">
+                        <div class="col-xs-8" id="tradNo" style="color: red;">
                         </div>
                     </div>
                     <div class="row inforow">
@@ -154,6 +156,7 @@
         var img;//验证码图片
         var isUploaded = true;
         var filesToUpload = [];
+        $(document).ajaxStart(function () { Pace.restart(); });
 
         function refreshCaptcha() {
             $.post("Handlers/Handler.ashx", { method: "getPic" }, function (img) {
@@ -201,8 +204,7 @@
                     $("#select2-brokerSelect-container").notify("营业部不能为空!", { position: "bottom center" });
                     return false;
                 }
-                if (!$("#files").val())
-                {
+                if (!$("#files").val()) {
                     $("#btnSelect").notify("请上传身份证正面照!", { position: "bottom center" });
                     return false;
                 }
@@ -211,8 +213,6 @@
                     $("#num").notify("验证码不能为空!", { position: "bottom center" });
                     return false;
                 }
-
-
 
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
                 var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
@@ -269,53 +269,57 @@
                 //   ck: 'on'
                 formData.append('ck', 'on');
                 $("#btnSubmit").attr("disabled", "disabled");
-                $.ajax({
-                    url: "Handlers/Handler.ashx",
-                    data: formData,
-                    dataType: "html",
-                    type: "POST",
-                    /**
-                     * 必须false才会避开jQuery对 formdata 的默认处理
-                     * XMLHttpRequest会对 formdata 进行正确的处理
-                     */
-                    processData: false,
-                    /**
-                     *必须false才会自动加上正确的Content-Type
-                     */
-                    contentType: false,
-                    success: function (data) {
-                        data = $.parseJSON(data);
-                        debugger;
-                        if (data.isSuccess == "0") {
-                            //报错了
+
+                Pace.track(function () {
+
+                    $.ajax({
+                        url: "Handlers/Handler.ashx",
+                        data: formData,
+                        dataType: "html",
+                        type: "POST",
+                        /**
+                         * 必须false才会避开jQuery对 formdata 的默认处理
+                         * XMLHttpRequest会对 formdata 进行正确的处理
+                         */
+                        processData: false,
+                        /**
+                         *必须false才会自动加上正确的Content-Type
+                         */
+                        contentType: false,
+                        success: function (data) {
+                            data = $.parseJSON(data);
+                            if (data.isSuccess == "0") {
+                                //报错了
+                                refreshCaptcha();
+                                $("#btnSubmit").notify(data.msg, { position: "bottom center" });
+                                $("#tradePage").hide();
+                                $("#myForm").show();
+                            }
+                            else {
+                                $(document).attr("title", "网上开户注册完成");
+                                $("#myForm").hide();
+                                $("#tradName").text(data.name);
+                                $("#tradCardNo").text(data.cardNumber);
+                                $("#tradNo").text(data.tradeNo);
+                                $("#tradPhone").text(data.phone);
+                                $("#tradJG").text(data.jgmc);
+                                $("#tradBH").text(data.jgbh);
+                                $("#tradLX").text(data.lx);
+                                $("#tradAddress").text(data.address);
+                                $("#tradePage").show();
+                            }
+                        },
+                        error: function (data) {
+                            $("#btnSubmit").notify("error:" + data.responseText);
                             refreshCaptcha();
-                            $("#btnSubmit").notify(data.msg,{ position: "bottom center" });
-                            $("#tradePage").hide();
-                            $("#myForm").show();
+                        },
+                        complete: function () {
+                            $("#btnSubmit").removeAttr("disabled");
                         }
-                        else {
-                            $(document).attr("title","网上开户注册完成");
-                            $("#myForm").hide();
-                            $("#tradName").text(data.name);
-                            $("#tradCardNo").text(data.cardNumber);
-                            $("#tradNo").text(data.tradeNo);
-                            $("#tradPhone").text(data.phone);
-                            $("#tradJG").text(data.jgmc);
-                            $("#tradBH").text(data.jgbh);
-                            $("#tradLX").text(data.lx);
-                            $("#tradAddress").text(data.address);
-                            $("#tradePage").show();
-                        }
-                    },
-                    error: function (data) {
-                        $("#btnSubmit").notify("error:" + data.responseText);
-                        refreshCaptcha();
-                    },
-                    complete: function ()
-                    {
-                        $("#btnSubmit").removeAttr("disabled");
-                    }
+                    });
+
                 });
+
             });
         });
 
