@@ -18,15 +18,15 @@
             <div id="myForm" style="margin-top: 20px;">
                 <div class="row">
                     <label for="name" class="col-xs-4 formLabel">姓名</label>
-                    <input type="text" id="name" name="name" class="col-xs-8" value="lvbiao" />
+                    <input type="text" id="name" name="name" class="col-xs-8" />
                 </div>
                 <div class="row">
                     <label for="phone" class="col-xs-4 formLabel">手机号码</label>
-                    <input type="text" id="phone" name="phone" class="col-xs-8" value="13524259846" />
+                    <input type="text" id="phone" name="phone" class="col-xs-8" />
                 </div>
                 <div class="row">
                     <label for="cardNo" class="col-xs-4 formLabel">身份证号码</label>
-                    <input type="text" id="cardNo" name="cardNo" class="col-xs-8" value="412701198206050513" />
+                    <input type="text" id="cardNo" name="cardNo" class="col-xs-8" />
                 </div>
                 <div class="row">
                     <label for="bankName" class="col-xs-4 formLabel">开户银行</label>
@@ -38,7 +38,7 @@
                 </div>
                 <div class="row">
                     <label for="accountNo" class="col-xs-4 formLabel">银行账号</label>
-                    <input type="text" id="accountNo" name="accountNo" class="col-xs-8" value="1234567890" />
+                    <input type="text" id="accountNo" name="accountNo" class="col-xs-8" />
                 </div>
                 <div class="row">
                     <label for="brokerSelect" class="col-xs-4 formLabel">营业部</label>
