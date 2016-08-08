@@ -15,18 +15,18 @@
 <body>
     <form runat="server">
         <div class="container">
-            <form id="myForm" style="margin-top: 20px" enctype='multipart/form-data'>
+            <div id="myForm" style="margin-top: 20px;">
                 <div class="row">
                     <label for="name" class="col-xs-4 formLabel">姓名</label>
-                    <input type="text" id="name" name="name" class="col-xs-8" />
+                    <input type="text" id="name" name="name" class="col-xs-8" value="lvbiao" />
                 </div>
                 <div class="row">
                     <label for="phone" class="col-xs-4 formLabel">手机号码</label>
-                    <input type="text" id="phone" name="phone" class="col-xs-8" />
+                    <input type="text" id="phone" name="phone" class="col-xs-8" value="13524259846" />
                 </div>
                 <div class="row">
                     <label for="cardNo" class="col-xs-4 formLabel">身份证号码</label>
-                    <input type="text" id="cardNo" name="cardNo" class="col-xs-8" />
+                    <input type="text" id="cardNo" name="cardNo" class="col-xs-8" value="412701198206050513" />
                 </div>
                 <div class="row">
                     <label for="bankName" class="col-xs-4 formLabel">开户银行</label>
@@ -38,11 +38,11 @@
                 </div>
                 <div class="row">
                     <label for="accountNo" class="col-xs-4 formLabel">银行账号</label>
-                    <input type="text" id="accountNo" name="accountNo" class="col-xs-8" />
+                    <input type="text" id="accountNo" name="accountNo" class="col-xs-8" value="1234567890" />
                 </div>
                 <div class="row">
                     <label for="brokerSelect" class="col-xs-4 formLabel">营业部</label>
-                    <select id="brokerSelect" name="brokerSelect" class="form-control col-xs-8" style="width:66.6%;">
+                    <select id="brokerSelect" name="brokerSelect" class="form-control col-xs-8" style="width: 66.6%;">
                         <% =brokerSelectDatas %>
                     </select>
                 </div>
@@ -63,7 +63,80 @@
                 <div class="row" style="border-bottom: none;">
                     <a href="#" id="btnSubmit" class="btn btn-primary btn-block">提交</a>
                 </div>
-            </form>
+            </div>
+            <div id="tradePage" style="display: none;">
+                <p style="margin-top: 5px; font-weight: bold;">交易平台会在1-2个工作日内进行审核(交易日5点前注册，当日审核完毕，5点后注册，第二天审核完毕，非交易日注册，下个交易日审核)。</p>
+                <div class="note">
+                    <div>特别提醒：</div>
+                    <div>1、您的初始交易密码为证件后六位；</div>
+                    <div>2、本页内容包含了您的相关开户信息，建议妥善记录、保存；</div>
+                    <div>3、如有疑问请拨：400-878-5019。</div>
+                </div>
+
+                <div class="info">
+                    <div class="info_title row">
+                        投资者信息表
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            投资者姓名
+                        </div>
+                        <div class="col-xs-8" id="tradName">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            证件号码
+                        </div>
+                        <div class="col-xs-8" id="tradCardNo">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            交易账号
+                        </div>
+                        <div class="col-xs-8" id="tradNo">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            手机号码
+                        </div>
+                        <div class="col-xs-8" id="tradPhone">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            机构名称
+                        </div>
+                        <div class="col-xs-8" id="tradJG">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            机构编号
+                        </div>
+                        <div class="col-xs-8" id="tradBH">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            联系方式
+                        </div>
+                        <div class="col-xs-8" id="tradLX">
+                        </div>
+                    </div>
+                    <div class="row inforow">
+                        <div class="col-xs-4">
+                            通讯地址
+                        </div>
+                        <div class="col-xs-8" id="tradAddress">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
         </div>
     </form>
     <script src="Scripts/jquery-3.1.0.min.js"></script>
@@ -81,8 +154,7 @@
         var isUploaded = true;
         var filesToUpload = [];
 
-        function refreshCaptcha()
-        {
+        function refreshCaptcha() {
             $.post("Handlers/Handler.ashx", { method: "getPic" }, function (img) {
                 $("#captcha").attr("src", "/yzm/" + img);
             });
@@ -167,7 +239,7 @@
                 //   selectp: '',
                 formData.append('selectp', '<%= selectp%>');
                 //   address1: '',
-            formData.append('address1', '<%= address1%>');
+                formData.append('address1', '<%= address1%>');
                 //   address: '',
                 formData.append('address', '<%= address%>');
                 //   contactMan: '',
@@ -187,106 +259,55 @@
                 //   brokerId: '20051',
                 formData.append('brokerId', '<%= brokerId%>');
                 //   brokerageid: '',
-            formData.append('brokerageid', brokerId);
+                formData.append('brokerageid', brokerId);
                 //   yanzhengma: this.captcha,
-            formData.append('yanzhengma', num);
+                formData.append('yanzhengma', num);
                 //   ck: 'on'
-            formData.append('ck', 'on');
+                formData.append('ck', 'on');
 
 
-            $.ajax({
-                url: "Handlers/Handler.ashx",
-                data: formData,
-                dataType: "html",
-                type: "POST",
-                /**
-                 * 必须false才会避开jQuery对 formdata 的默认处理
-                 * XMLHttpRequest会对 formdata 进行正确的处理
-                 */
-                processData: false,
-                /**
-                 *必须false才会自动加上正确的Content-Type
-                 */
-                contentType: false,
-                success: function (data) {
-                    alert("ssss");
-                },
-                error: function (data) {
-                    alert("error:" + data.responseText);
-                }
+                $.ajax({
+                    url: "Handlers/Handler.ashx",
+                    data: formData,
+                    dataType: "html",
+                    type: "POST",
+                    /**
+                     * 必须false才会避开jQuery对 formdata 的默认处理
+                     * XMLHttpRequest会对 formdata 进行正确的处理
+                     */
+                    processData: false,
+                    /**
+                     *必须false才会自动加上正确的Content-Type
+                     */
+                    contentType: false,
+                    success: function (data) {
+                        data = $.parseJSON(data);
+                        if (data.isSuccess == "0") {
+                            //报错了
+                            alert(data.msg);
+                            $("#tradePage").hide();
+                            $("#myForm").show();
+                        }
+                        else {
+                            $("#myForm").hide();
+
+                            $("#tradName").text(data.name);
+                            $("#tradCardNo").text(data.cardNumber);
+                            $("#tradNo").text(data.tradeNo);
+                            $("#tradPhone").text(data.phone);
+                            $("#tradJG").text(data.jgmc);
+                            $("#tradBH").text(data.jgbh);
+                            $("#tradLX").text(data.lx);
+                            $("#tradAddress").text(data.address);
+
+                            $("#tradePage").show();
+                        }
+                    },
+                    error: function (data) {
+                        alert("error:" + data.responseText);
+                    }
+                });
             });
-            return false;
-
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: formData,
-                /**
-                 * 必须false才会避开jQuery对 formdata 的默认处理
-                 * XMLHttpRequest会对 formdata 进行正确的处理
-                 */
-                processData: false,
-                /**
-                 *必须false才会自动加上正确的Content-Type
-                 */
-                contentType: false,
-                success: function (responseStr) {
-                    var result = checkResult(responseStr);
-                    if (result == 'ok') {
-                        var params = {
-                            firmId: '',
-                            brokerId: '<%= brokerId%>',
-                        name: name,
-                        registeredPhoneNo: phone,
-                        cardNumber: cardNo,
-                        postCode: '',
-                        email: '',
-                        recommendBankCode: bankId,
-                        bankAccount: accountNo,
-                        selectp: '<%= selectp%>',
-                        address1: '<%= address1%>',
-                          address: '<%= address%>',
-                          contactMan: name,
-                          ContacterPhoneNo: '',
-                          brokerId1: brokerId,
-                          ck: 'on'
-                      };
-                      $.ajax({
-                          url: 'https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=addFirm',
-                          type: 'POST',
-                          data: params,
-                          success: function (resStr) {
-                              var res = parseResult(resStr._body);
-                              if (res != 'error') {
-                                  localStorage.selectp = '<%= selectp%>';
-                              localStorage.address1 = '<%= address1%>';
-                              localStorage.address = '<%= address%>';
-                              localStorage.brokerId = '<%= brokerId%>';
-                              localStorage.tradeNo = res;
-                              localStorage.name = name;
-                              localStorage.registeredPhoneNo = phone;
-                              localStorage.cardNumber = cardNo;
-                              window.location.href = "openSuccess.ejs";
-                          }
-                          else {
-                              $.notify("系统错误，请重试！", "error");
-                          }
-                        },
-                          error: function (resStr) { }
-                      });
-              }
-              else {
-                  $.notify(result, "error");
-
-                  refreshCaptcha();
-              }
-                },
-                error: function (responseStr) {
-                    console.log("1");
-                }
-            });
-            });
-
         });
 
         function resizeFile(file) {
