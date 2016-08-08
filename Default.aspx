@@ -17,19 +17,19 @@
         <div class="container">
             <div id="myForm" style="margin-top: 20px;">
                 <div class="row">
-                    <label for="name" class="col-xs-4 formLabel">姓名</label>
+                    <label for="name" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">姓名</label>
                     <input type="text" id="name" name="name" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="phone" class="col-xs-4 formLabel">手机号码</label>
-                    <input type="text" id="phone" name="phone" class="col-xs-8" />
+                    <label for="phone" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">手机号码</label>
+                    <input type="number" id="phone" name="phone" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="cardNo" class="col-xs-4 formLabel">身份证号码</label>
+                    <label for="cardNo" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">身份证号码</label>
                     <input type="text" id="cardNo" name="cardNo" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="bankName" class="col-xs-4 formLabel">开户银行</label>
+                    <label for="bankName" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">开户银行</label>
                     <select id="bankSelect" name="bankSelect" class="form-control col-xs-8" style="width: 66.6%;">
                         <option value="10" selected="selected">工商银行</option>
                         <option value="18">民生银行</option>
@@ -37,17 +37,17 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label for="accountNo" class="col-xs-4 formLabel">银行账号</label>
-                    <input type="text" id="accountNo" name="accountNo" class="col-xs-8" />
+                    <label for="accountNo" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">银行账号</label>
+                    <input type="number" id="accountNo" name="accountNo" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="brokerSelect" class="col-xs-4 formLabel">营业部</label>
+                    <label for="brokerSelect" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">营业部</label>
                     <select id="brokerSelect" name="brokerSelect" class="form-control col-xs-8" style="width: 66.6%;">
                         <% =brokerSelectDatas %>
                     </select>
                 </div>
                 <div class="row">
-                    <label for="cardPhoto" class="col-xs-4 formLabel">身份证正面照</label>
+                    <label for="cardPhoto" class="col-xs-4 formLabel" style="margin-left:0;margin-right:0;">身份证正面照<span id="isUploaded" style="display:none;color:#fe8f5e;position:absolute;right:-20px;">√</span></label>
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
                 </div>
@@ -95,7 +95,7 @@
                         <div class="col-xs-4">
                             交易账号
                         </div>
-                        <div class="col-xs-8" id="tradNo">
+                        <div class="col-xs-8" id="tradNo" style="color:red;">
                         </div>
                     </div>
                     <div class="row inforow">
@@ -212,6 +212,8 @@
                     return false;
                 }
 
+
+
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
                 var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
                 var formData = new FormData();
@@ -266,7 +268,7 @@
                 formData.append('yanzhengma', num);
                 //   ck: 'on'
                 formData.append('ck', 'on');
-
+                $("#btnSubmit").attr("disabled", "disabled");
                 $.ajax({
                     url: "Handlers/Handler.ashx",
                     data: formData,
@@ -286,6 +288,7 @@
                         debugger;
                         if (data.isSuccess == "0") {
                             //报错了
+                            refreshCaptcha();
                             $("#btnSubmit").notify(data.msg,{ position: "bottom center" });
                             $("#tradePage").hide();
                             $("#myForm").show();
@@ -305,7 +308,12 @@
                         }
                     },
                     error: function (data) {
-                        $("#btnSubmit").notify("error:" + data.responseText)
+                        $("#btnSubmit").notify("error:" + data.responseText);
+                        refreshCaptcha();
+                    },
+                    complete: function ()
+                    {
+                        $("#btnSubmit").removeAttr("disabled");
                     }
                 });
             });
@@ -413,6 +421,7 @@
                     filesToUpload.push(fileInput.files[i]);
                 }
             }
+            $("#isUploaded").show();
         }
     </script>
 </body>
