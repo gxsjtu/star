@@ -18,7 +18,7 @@ public partial class _Default : System.Web.UI.Page
     {
         var name = Request.QueryString["name"];
         if (!string.IsNullOrEmpty(name))
-        { 
+        {
             if (name == "kuangyuan")
             {
                 title = "匡元";
@@ -47,6 +47,10 @@ public partial class _Default : System.Web.UI.Page
                 this.address = "西康路1255号13层";
                 this.brokerId = "20051";
             }
+        }
+        else
+        {
+            Response.Redirect("error.html", true);
         }
     }
 }
