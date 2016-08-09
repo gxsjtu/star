@@ -182,8 +182,10 @@
                 placeholder: '请选择一个营业部'
             });
             $("#btnSubmit").click(function () {
+                debugger;
                 var brokerId = brokerSelect.val();
                 var bankId = bankSelect.val();
+
                 //alert(bankId);
                 var name = $.trim($("#name").val());
                 if (!name) {
@@ -218,6 +220,9 @@
                     $("#num").notify("验证码不能为空!", { position: "bottom center" });
                     return false;
                 }
+                
+                var brokerName = $('#brokerSelect').select2('data')[0].text;
+                var bankName = $('#bankSelect').select2('data')[0].text;
 
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
                 var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
@@ -243,6 +248,8 @@
                 formData.append('recommendBankCode', bankId);
                 //   bankAccount: this.bankAccount,
                 formData.append('bankAccount', accountNo);
+                formData.append('brokerName', brokerName);
+                formData.append('bankName', bankName);
                 //   postCode: '',
                 formData.append('postCode', '');
                 //   selectp: '',
@@ -390,7 +397,7 @@
             return new Blob([uInt8Array], { type: contentType });
         }
 
-        function _blobToFile(b, fileName) {
+        function blobToFile(b, fileName) {
             b.lastModifiedDate = new Date();
             b.name = fileName;
             return b;

@@ -11,12 +11,14 @@ using System.IO;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 public class Handler : IHttpHandler
 {
     //private static readonly string DefaultUserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
     private CookieCollection cookies = new CookieCollection();
-
+    
     public void ProcessRequest(HttpContext context)
     {
         var method = context.Request["method"];
@@ -85,6 +87,8 @@ public class Handler : IHttpHandler
             var brokerageid = context.Request["brokerageid"];
             var yanzhengma = context.Request["yanzhengma"];
             var ck = context.Request["ck"];
+            var bankName = context.Request["bankName"];
+            var brokerName = context.Request["brokerName"];
 
             IDictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("name", name);
@@ -134,7 +138,8 @@ public class Handler : IHttpHandler
                 stream = response.GetResponseStream();   //获取响应的字符串流  
                 sr = new StreamReader(stream); //创建一个stream读取流  
                 html = sr.ReadToEnd();   //从头读到尾
-                
+                if (string.IsNullOrEmpty(html))
+                    throw new Exception();
             }
             catch (Exception)
             {
@@ -178,6 +183,8 @@ public class Handler : IHttpHandler
                     stream = response.GetResponseStream();
                     sr = new StreamReader(stream);
                     html = sr.ReadToEnd();
+                    if (string.IsNullOrEmpty(html))
+                        throw new Exception();
                 }
                 catch (Exception)
                 {
@@ -232,6 +239,23 @@ public class Handler : IHttpHandler
                     openAccountTrade.JGNo = jgbm;
                     openAccountTrade.ContactNum = lxfs;
                     context.Response.Write(GetResultStr(openAccountTrade));
+
+
+
+                    User user = new User();
+                    user.Name = openAccountTrade.Name;
+                    user.Phone = openAccountTrade.RegisteredPhone;
+                    user.CardNo = openAccountTrade.CardNumber;
+                    user.Bank = bankName;
+                    user.BankNo = bankAccount;
+                    user.Broker = brokerName;
+                    user.TradeNo = openAccountTrade.TradeNo;
+                    user.DeptName = openAccountTrade.JGMC;
+                    user.DeptNo = openAccountTrade.JGNo;
+                    user.Contact = openAccountTrade.ContactNum;
+                    user.Address = openAccountTrade.Address;
+                    addUser(user);
+                    
                 }
                 else
                 {
@@ -520,6 +544,9 @@ public class Handler : IHttpHandler
                 writer.WriteValue(result.ContactNum);
                 writer.WritePropertyName("address");
                 writer.WriteValue(result.Address);
+
+
+
             }
             else
             {
@@ -537,6 +564,55 @@ public class Handler : IHttpHandler
         }
         return sw.GetStringBuilder().ToString();
     }
+
+    private string strConn = "mongodb://root:root@172.20.67.133:27060";
+    private string dbName = "hebei_scce";
+
+    private bool addUser(User user)
+    {
+        bool flag = false;
+        try
+        {
+            var client = new MongoClient(strConn);
+            var db = client.GetDatabase(dbName);
+            var collection = db.GetCollection<BsonDocument>("users");
+            //var documents = collection.Find(new BsonDocument()).ToList();
+            var document = new BsonDocument { 
+                {"name",user.Name},
+                {"phone",user.Phone},
+                {"cardno",user.CardNo},
+                {"bank",user.Bank},
+                {"bankno",user.BankNo},
+                {"broker",user.Broker},
+                {"tradeno",user.TradeNo},
+                {"deptname",user.DeptName},
+                {"deptno",user.DeptNo},
+                {"contact",user.Contact},
+                {"address",user.Address}
+            };
+            collection.InsertOne(document);
+        }
+        catch (Exception)
+        {
+            flag = false;
+        }
+        return flag;
+    }
+}
+
+public class User
+{
+    public string Name { get; set; }
+    public string Phone { get; set; }
+    public string CardNo { get; set; }
+    public string Bank { get; set; }
+    public string BankNo { get; set; }
+    public string Broker { get; set; }
+    public string TradeNo { get; set; }
+    public string DeptName { get; set; }
+    public string DeptNo { get; set; }
+    public string Contact { get; set; }
+    public string Address { get; set; }
 }
 
 public class OpenAccountClass
