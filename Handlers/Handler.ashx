@@ -66,8 +66,10 @@ public class Handler : IHttpHandler
             }
             finally
             {
-                fs.Close();
-                response.Close();
+                if(fs!=null)
+                    fs.Close();
+                if(response!=null)
+                    response.Close();
             }
             for (int j = 0; j < cookies.Count; j++)
             {
@@ -167,7 +169,8 @@ public class Handler : IHttpHandler
                     sr.Close();
                 if (stream != null)
                     stream.Close();
-                response.Close();
+                if(response!=null)
+                    response.Close();
             }
 
             if (html.IndexOf("交易会员入市协议") != -1)
@@ -194,11 +197,13 @@ public class Handler : IHttpHandler
                 response = CreatePostHttpResponse(url, parameters, cookies, "z.hbyoubi.com");
                 try
                 {
-                    stream = response.GetResponseStream();
-                    sr = new StreamReader(stream);
-                    html = sr.ReadToEnd();
-                    if (string.IsNullOrEmpty(html))
-                        throw new Exception();
+                    using (stream = response.GetResponseStream())
+                    {
+                        sr = new StreamReader(stream);
+                        html = sr.ReadToEnd();
+                        if (string.IsNullOrEmpty(html))
+                            throw new Exception();
+                    }
                 }
                 catch (Exception)
                 {
@@ -208,9 +213,8 @@ public class Handler : IHttpHandler
                 }
                 finally
                 {
-                    sr.Close();
-                    stream.Close();
-                    response.Close();
+                    if(response!=null)
+                        response.Close();
                 }
                 int tradIndex = -1;
                 tradIndex = html.IndexOf("<td>交易账号</td>");
@@ -610,7 +614,11 @@ public class Handler : IHttpHandler
         }
         finally
         {
-            response.Close();
+            if (response != null)
+            {
+                response.Close();
+                response = null;
+            }
         }
         return flag;
     }

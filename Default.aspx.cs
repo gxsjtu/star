@@ -77,7 +77,8 @@ public partial class _Default : System.Web.UI.Page
             }
             finally
             {
-                res.Close();
+                if(res!=null)
+                    res.Close();
             }
 
             if (name == "kuangyuan")
