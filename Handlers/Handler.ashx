@@ -21,7 +21,6 @@ public class Handler : IHttpHandler
     
     public void ProcessRequest(HttpContext context)
     {
-        //findData();
         var method = context.Request["method"];
         if (method == "getPic")
         {
@@ -89,7 +88,7 @@ public class Handler : IHttpHandler
             var yanzhengma = context.Request["yanzhengma"];
             var ck = context.Request["ck"];
             var bankName = context.Request["bankName"];
-            //var brokerName = context.Request["brokerName"];
+            var brokerName = context.Request["brokerName"];
 
             IDictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("name", name);
@@ -249,7 +248,7 @@ public class Handler : IHttpHandler
                     user.CardNo = openAccountTrade.CardNumber;
                     user.Bank = bankName;
                     user.BankNo = bankAccount;
-                    user.Broker = brokerageid;
+                    user.Broker = brokerName;
                     user.TradeNo = openAccountTrade.TradeNo;
                     user.DeptName = openAccountTrade.JGMC;
                     user.DeptNo = openAccountTrade.JGNo;
@@ -569,14 +568,6 @@ public class Handler : IHttpHandler
     private string strConn = "mongodb://root:root@172.20.67.133:27060";
     private string dbName = "hebei_scce";
 
-    private void findData()
-    {
-        var client = new MongoClient(strConn);
-        var db = client.GetDatabase(dbName);
-        var collection = db.GetCollection<BsonDocument>("users");
-        var documents = collection.Find(new BsonDocument()).ToList();
-    }
-    
     private bool addUser(User user)
     {
         bool flag = false;
