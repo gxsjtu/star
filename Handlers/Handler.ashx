@@ -18,9 +18,23 @@ public class Handler : IHttpHandler
 {
     //private static readonly string DefaultUserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)";
     private CookieCollection cookies = new CookieCollection();
-    
+
     public void ProcessRequest(HttpContext context)
     {
+        //User u = new User();
+        //u.Name = "123";
+        //u.Phone = "12345678901";
+        //u.CardNo = "41270111111111111";
+        //u.Bank = "平安银行";
+        //u.BankNo = "10001";
+        //u.Broker = "A";
+        //u.TradeNo = "20050601";
+        //u.DeptName = "上海匡元";
+        //u.DeptNo = "1001";
+        //u.Contact = "4001";
+        //u.Address = "普陀科技大厦";
+        //addUser(u);
+        
         var method = context.Request["method"];
         if (method == "getPic")
         {
@@ -149,9 +163,9 @@ public class Handler : IHttpHandler
             }
             finally
             {
-                if(sr!=null)
+                if (sr != null)
                     sr.Close();
-                if(stream!=null)
+                if (stream != null)
                     stream.Close();
                 response.Close();
             }
@@ -219,7 +233,7 @@ public class Handler : IHttpHandler
                     HtmlDocument doc = new HtmlDocument();
                     doc.LoadHtml(html);
                     HtmlNodeCollection collection = doc.DocumentNode.SelectNodes("//table/tr/td");
-                    string jgmc="",jgbm="",lxfs="";
+                    string jgmc = "", jgbm = "", lxfs = "";
                     foreach (var node in collection)
                     {
                         if (node.InnerText.StartsWith("机构名称："))
@@ -255,7 +269,7 @@ public class Handler : IHttpHandler
                     user.Contact = openAccountTrade.ContactNum;
                     user.Address = openAccountTrade.Address;
                     addUser(user);
-                    
+
                 }
                 else
                 {
@@ -405,7 +419,7 @@ public class Handler : IHttpHandler
                     i++;
                 }
             }
-            byte[] data = Encoding.ASCII.GetBytes(buffer.ToString());
+            byte[] data = Encoding.UTF8.GetBytes(buffer.ToString());
             using (Stream stream = request.GetRequestStream())
             {
                 stream.Write(data, 0, data.Length);
@@ -544,9 +558,6 @@ public class Handler : IHttpHandler
                 writer.WriteValue(result.ContactNum);
                 writer.WritePropertyName("address");
                 writer.WriteValue(result.Address);
-
-
-
             }
             else
             {
@@ -554,9 +565,6 @@ public class Handler : IHttpHandler
                 writer.WritePropertyName("msg");
                 writer.WriteValue(result.Msg);
             }
-
-
-
             writer.WriteEndObject();
 
             writer.Flush();
@@ -565,36 +573,44 @@ public class Handler : IHttpHandler
         return sw.GetStringBuilder().ToString();
     }
 
-    private string strConn = "mongodb://root:root@172.20.67.133:27060";
-    private string dbName = "hebei_scce";
-
     private bool addUser(User user)
     {
+        var url = @"http://172.20.70.174:3001/open";
         bool flag = false;
+        Stream stream = null;
+        StreamReader sr = null;
+        string data = "";
+        HttpWebResponse response = null;
         try
         {
-            var client = new MongoClient(strConn);
-            var db = client.GetDatabase(dbName);
-            var collection = db.GetCollection<BsonDocument>("users");
-            //var documents = collection.Find(new BsonDocument()).ToList();
-            var document = new BsonDocument { 
-                {"name",user.Name},
-                {"phone",user.Phone},
-                {"cardno",user.CardNo},
-                {"bank",user.Bank},
-                {"bankno",user.BankNo},
-                {"broker",user.Broker},
-                {"tradeno",user.TradeNo},
-                {"deptname",user.DeptName},
-                {"deptno",user.DeptNo},
-                {"contact",user.Contact},
-                {"address",user.Address}
-            };
-            collection.InsertOne(document);
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("name", user.Name);
+            parameters.Add("phone", user.Phone);
+            parameters.Add("cardno", user.CardNo);
+            parameters.Add("bank", user.Bank);
+            parameters.Add("bankno", user.BankNo);
+            parameters.Add("broker", user.Broker);
+            parameters.Add("tradeno", user.TradeNo);
+            parameters.Add("deptname", user.DeptName);
+            parameters.Add("deptno", user.DeptNo);
+            parameters.Add("contact", user.Contact);
+            parameters.Add("address", user.Address);
+
+            response = CreatePostHttpResponse(url, parameters, null, "");
+            using (stream = response.GetResponseStream())
+            {
+                sr = new StreamReader(stream);
+                data = sr.ReadToEnd();
+            }
+            flag = true;
         }
-        catch (Exception)
+        catch
         {
             flag = false;
+        }
+        finally
+        {
+            response.Close();
         }
         return flag;
     }
