@@ -104,7 +104,6 @@ public class Handler : IHttpHandler
             var yanzhengma = context.Request["yanzhengma"];
             var ck = context.Request["ck"];
             var bankName = context.Request["bankName"];
-            var brokerName = context.Request["brokerName"];
 
             IDictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("name", name);
@@ -266,7 +265,7 @@ public class Handler : IHttpHandler
                     user.CardNo = openAccountTrade.CardNumber;
                     user.Bank = bankName;
                     user.BankNo = bankAccount;
-                    user.Broker = brokerName;
+                    user.Broker = brokerageid;
                     user.TradeNo = openAccountTrade.TradeNo;
                     user.DeptName = openAccountTrade.JGMC;
                     user.DeptNo = openAccountTrade.JGNo;

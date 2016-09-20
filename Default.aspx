@@ -43,12 +43,6 @@
                     <input type="number" id="accountNo" name="accountNo" class="col-xs-8" />
                 </div>
                 <div class="row">
-                    <label for="brokerSelect" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">营业部</label>
-                    <select id="brokerSelect" name="brokerSelect" class="form-control col-xs-8" style="width: 66.6%;">
-                        <% =brokerSelectDatas %>
-                    </select>
-                </div>
-                <div class="row">
                     <label for="cardPhoto" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证正面照<span id="isUploaded" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
@@ -151,11 +145,11 @@
         var bankId;
         var bankSelect;
         //营业部
-        var brokerSelect;
-        var brokerId;
+        var brokerId = "<%= selectBrokerId %>";
         var img;//验证码图片
         var isUploaded = true;
         var filesToUpload = [];
+        
         $(document).ajaxStart(function () { Pace.restart(); });
 
         function refreshCaptcha() {
@@ -173,20 +167,12 @@
             refreshCaptcha();
 
             bankSelect = $('#bankSelect');
-            brokerSelect = $('#brokerSelect');
             bankSelect.select2({
                 minimumResultsForSearch: Infinity
             });
-            brokerSelect.select2({
-                minimumResultsForSearch: Infinity,
-                placeholder: '请选择一个营业部'
-            });
-            $("#btnSubmit").click(function () {
-                debugger;
-                var brokerId = brokerSelect.val();
-                var bankId = bankSelect.val();
 
-                //alert(bankId);
+            $("#btnSubmit").click(function () {
+                var bankId = bankSelect.val();
                 var name = $.trim($("#name").val());
                 if (!name) {
                     $("#name").notify("姓名不能为空!", { position: "bottom center" });
@@ -207,10 +193,6 @@
                     $("#accountNo").notify("银行账号不能为空!", { position: "bottom center" });
                     return false;
                 }
-                if (!brokerId) {
-                    $("#select2-brokerSelect-container").notify("营业部不能为空!", { position: "bottom center" });
-                    return false;
-                }
                 if (!$("#files").val()) {
                     $("#btnSelect").notify("请上传身份证正面照!", { position: "bottom center" });
                     return false;
@@ -221,7 +203,6 @@
                     return false;
                 }
                 
-                var brokerName = $('#brokerSelect').select2('data')[0].text;
                 var bankName = $('#bankSelect').select2('data')[0].text;
 
                 var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
@@ -248,7 +229,6 @@
                 formData.append('recommendBankCode', bankId);
                 //   bankAccount: this.bankAccount,
                 formData.append('bankAccount', accountNo);
-                formData.append('brokerName', brokerName);
                 formData.append('bankName', bankName);
                 //   postCode: '',
                 formData.append('postCode', '');
