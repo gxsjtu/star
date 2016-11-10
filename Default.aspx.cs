@@ -42,7 +42,7 @@ public partial class _Default : System.Web.UI.Page
             StreamReader sr = null;
             HttpWebResponse res = null;
             Dictionary<string, string> brokerDic = new Dictionary<string, string>();
-            var url = @"http://172.20.70.174:3001/brokers/" + name;
+            var url = @"http://kuangyuan.shtx.com.cn/brokers/" + name;
             try
             {
                 res = CreateGetHttpResponse(url);
@@ -52,12 +52,22 @@ public partial class _Default : System.Web.UI.Page
                     brokers = sr.ReadToEnd();
                     if (!string.IsNullOrEmpty(brokers))
                     {
-                        //JObject jobj = JObject.Parse(brokers);
-                        JArray jArray = JArray.Parse(brokers);
-                        foreach (var jobj in jArray)
+                        JObject jobj = JObject.Parse(brokers);
+                        this.title = jobj["title"].ToString();
+                        this.selectp = jobj["city"].ToString();
+                        this.address1 = jobj["address1"].ToString();
+                        this.address = jobj["address"].ToString();
+                        this.brokerId = jobj["Id"].ToString();
+                        var brokersStr = jobj["brokers"].ToString();
+                        JArray jArray = JArray.Parse(brokersStr);
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append("<option></option>");
+                        foreach (var job in jArray)
                         {
-                            brokerDic.Add(jobj["id"].ToString(), jobj["value"].ToString());
+                            //brokerDic.Add(job["id"].ToString(), job["value"].ToString());
+                            sb.Append("<option value='" + job["id"].ToString() + "'>" + job["value"].ToString() + "</option>");
                         }
+                        this.brokerSelectDatas = sb.ToString();
                     }
                     else
                     {
@@ -81,22 +91,16 @@ public partial class _Default : System.Web.UI.Page
                     res.Close();
             }
 
-            if (name == "kuangyuan")
-            {
-                title = "匡元";
+            //if (name == "kuangyuan")
+            //{
+            //    title = "匡元";
                 
-                StringBuilder sb = new StringBuilder();
-                sb.Append("<option></option>");
-                foreach (var b in brokerDic)
-                {
-                    sb.Append("<option value='" + b.Key + "'>" + b.Value + "</option>");
-                }
-                brokerSelectDatas = sb.ToString();
-                this.selectp = "上海市";
-                this.address1 = "普陀区";
-                this.address = "西康路1255号13层";
-                this.brokerId = "20051";
-            }
+                
+            //    this.selectp = "上海市";
+            //    this.address1 = "普陀区";
+            //    this.address = "西康路1255号13层";
+            //    this.brokerId = "20051";
+            //}
         }
         else
         {

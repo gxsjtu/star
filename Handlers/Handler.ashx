@@ -157,9 +157,9 @@ public class Handler : IHttpHandler
                 if (string.IsNullOrEmpty(html))
                     throw new Exception();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！" };
+                var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！"+ex.Message };
                 context.Response.Write(GetResultStr(openAccountError));
                 context.Response.End();
             }
@@ -205,9 +205,9 @@ public class Handler : IHttpHandler
                             throw new Exception();
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！" };
+                    var openAccountError = new OpenAccountClass() { IsSuccess = false, Msg = "系统错误，请重试！"+ex.Message };
                     context.Response.Write(GetResultStr(openAccountError));
                     context.Response.End();
                 }
@@ -579,7 +579,7 @@ public class Handler : IHttpHandler
 
     private bool addUser(User user)
     {
-        var url = @"http://172.20.70.174:3001/open";
+        var url = @"http://kuangyuan.shtx.com.cn/open";
         bool flag = false;
         Stream stream = null;
         StreamReader sr = null;
