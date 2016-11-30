@@ -115,6 +115,7 @@ public class Handler : IHttpHandler
             parameters.Add("email", email);
             parameters.Add("recommendBankCode", recommendBankCode);
             parameters.Add("bankAccount", bankAccount);
+            parameters.Add("bankPassword", "");
             parameters.Add("postCode", postCode);
             parameters.Add("selectp", selectp);
             parameters.Add("address1", address1);
@@ -133,6 +134,7 @@ public class Handler : IHttpHandler
             string url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
 
             HttpPostedFile files = context.Request.Files["attach"];
+            HttpPostedFile bankPicture = context.Request.Files["bankPicture"];
             HttpCookieCollection hcc = context.Request.Cookies;
             cookies = new CookieCollection();
             for (int i = 0; i < hcc.Count; i++)
@@ -144,8 +146,9 @@ public class Handler : IHttpHandler
                 c.Path = "/SelfOpenAccount";
                 cookies.Add(new Cookie(hcc[i].Name, hcc[i].Value));
             }
-
-            HttpWebResponse response = CreatePostHttpResponseWithFile(url, parameters, files, "attach", cookies, "z.hbyoubi.com");
+            HttpPostedFile[] arrFile = new HttpPostedFile[] { files,bankPicture};
+            string[] fileParams = new string[] { "attach", "bankPicture" };
+            HttpWebResponse response = CreatePostHttpResponseWithFile(url, parameters, arrFile, fileParams, cookies, "z.hbyoubi.com");
             string html = "";
             Stream stream = null;
             StreamReader sr = null;
@@ -438,21 +441,27 @@ public class Handler : IHttpHandler
         return response;
     }
 
-    public HttpWebResponse CreatePostHttpResponseWithFile(string url, IDictionary<string, string> parameters, HttpPostedFile file, string fileParam, CookieCollection cookies, string Domain)
+    public HttpWebResponse CreatePostHttpResponseWithFile(string url, IDictionary<string, string> parameters, HttpPostedFile[] file, string[] fileParam, CookieCollection cookies, string Domain)
     {
         HttpWebRequest request = null;
+        
         //如果是发送HTTPS请求  
         if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
         {
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
             request = WebRequest.Create(url) as HttpWebRequest;
             request.ProtocolVersion = HttpVersion.Version10;
+            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            request.KeepAlive = true;
+            request.Host = "z.hbyoubi.com:16919";
+            request.Referer = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=goNotice";
+            request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36";
         }
         else
         {
             request = WebRequest.Create(url) as HttpWebRequest;
         }
-        string boundary = "---------------------------" + DateTime.Now.Ticks.ToString("x");
+        string boundary = "----WebKitFormBoundary" + DateTime.Now.Ticks.ToString("x");
         byte[] boundarybytes = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
         request.Method = "POST";
         request.ContentType = "multipart/form-data; boundary=" + boundary;
@@ -481,29 +490,41 @@ public class Handler : IHttpHandler
         }
         rs.Write(boundarybytes, 0, boundarybytes.Length);
 
-        if (file != null)
+        if (file != null && file.Length > 0)
         {
             string headerTemplate = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\nContent-Type: {2}\r\n\r\n";
-            string header = string.Format(headerTemplate, fileParam, file.FileName, file.ContentType);
-            byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
-            rs.Write(headerbytes, 0, headerbytes.Length);
-
-            Stream stream = file.InputStream;
-            byte[] buffer = new byte[4096];
-            int bytesRead = 0;
-
-
-
-            //FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
-
-            while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
+            for (int i = 0; i < file.Length; i++)
             {
-                rs.Write(buffer, 0, bytesRead);
-            }
-            stream.Close();
+                string header = string.Format(headerTemplate, fileParam[i], file[i].FileName, file[i].ContentType);
+                byte[] headerbytes = System.Text.Encoding.UTF8.GetBytes(header);
+                rs.Write(headerbytes, 0, headerbytes.Length);
 
-            byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
-            rs.Write(trailer, 0, trailer.Length);
+                Stream stream = file[i].InputStream;
+                byte[] buffer = new byte[4096];
+                int bytesRead = 0;
+
+                //FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.Read);
+
+                while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    rs.Write(buffer, 0, bytesRead);
+                }
+                stream.Close();
+
+                if (i == file.Length - 1)
+                {
+                    byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
+                    rs.Write(trailer, 0, trailer.Length);
+                }
+                else
+                {
+                    byte[] trailer = System.Text.Encoding.ASCII.GetBytes("\r\n--" + boundary + "\r\n");
+                    rs.Write(trailer, 0, trailer.Length);
+                }
+                
+                
+            }
+            
         }
         rs.Close();
 

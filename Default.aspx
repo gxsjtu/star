@@ -49,15 +49,32 @@
                     </select>
                 </div>
                 <div class="row">
-                    <label for="cardPhoto" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证正面照<span id="isUploaded" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
+                    <label for="btnSelect" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证正面照<span id="isUploaded" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
+                </div>
+                 <div class="row">
+                    <label for="btnSelect1" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证说明书半身<span id="isUploaded1" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
+                    <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect1" style="float: right;" onclick="document.getElementById('files1').click();">点击选择图片(小于500k)</a>
+                    <input style="display: none;" id="files1" name="files1" type="file" onchange="fileChangeEvent1(this)" />
                 </div>
                 <div class="row">
                     <img id="captcha" style="height: 30px; line-height: 30px;" class="col-xs-4" />
                     <input type="text" id="num" name="num" class="col-xs-4 formLabel" placeholder="请输入验证码" />
                     <a href="#" class="btn btn-primary btn-sm col-xs-4" onclick="refreshCaptcha()">重新获取验证码</a>
                 </div>
+
+
+                <div style="margin-top:20px;">
+                    提交本申请即代表您本人/机构已阅读并完全理解
+                </div>
+                <div>
+                    <a href="notice.html">《会员交易风险提示书》</a>
+                </div>
+                <div style="margin-bottom:10px;">
+                    中各项内容，愿意承担交易市场的各种风险。
+                </div>
+
                 <input type="hidden" name="selectp" value="<%= selectp%>" />
                 <input type="hidden" name="address1" value="<%= address1%>" />
                 <input type="hidden" name="address" value="<%= address%>" />
@@ -156,6 +173,7 @@
         var img;//验证码图片
         var isUploaded = true;
         var filesToUpload = [];
+        var filesToUpload1 = [];
         $(document).ajaxStart(function () { Pace.restart(); });
 
         function refreshCaptcha() {
@@ -224,12 +242,17 @@
                 var brokerName = $('#brokerSelect').select2('data')[0].text;
                 var bankName = $('#bankSelect').select2('data')[0].text;
 
-                var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
-                var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
+                //var url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
+                //var data = { name: name, registeredPhoneNo: phone, attach: filesToUpload[0], method: 'dataInfo' };
                 var formData = new FormData();
                 for (var i = 0; i < filesToUpload.length; i++) {
                     formData.append("attach", filesToUpload[i]);
                 }
+                for (var i = 0; i < filesToUpload1.length; i++) {
+                    formData.append("bankPicture", filesToUpload1[i]);
+                }
+                //formData.append("attach", document.getElementById("files").files[0]);
+                //formData.append("bankPicture", document.getElementById("files1").files[0]);
                 formData.append("method", "dataInfo");
                 //添加参数
                 //   name: this.name,
@@ -431,7 +454,7 @@
         function fileChangeEvent(fileInput) {
             // this.isUploaded = true;
             // this.filesToUpload = [];
-
+            debugger;
             for (var i = 0; i < fileInput.files.length; i++) {
                 if (fileInput.files[i].size > (1024 * 500)) {
                     resizeFile(fileInput.files[i]);
@@ -441,6 +464,58 @@
                 }
             }
             $("#isUploaded").show();
+        }
+
+        function fileChangeEvent1(fileInput) {
+            // this.isUploaded = true;
+            // this.filesToUpload = [];
+
+            for (var i = 0; i < fileInput.files.length; i++) {
+                if (fileInput.files[i].size > (1024 * 500)) {
+                    resizeFile1(fileInput.files[i]);
+                }
+                else {
+                    filesToUpload1.push(fileInput.files[i]);
+                }
+            }
+            $("#isUploaded1").show();
+        }
+
+        function resizeFile1(file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            var image = document.createElement('img');
+            reader.onload = function (e) {
+                {
+                    image.src = e.target.result;
+                    image.onload = function () {
+                        var canvas = document.createElement('canvas'),
+                                     max_size = 544,
+                                     width = image.width,
+                                     height = image.height;
+                        if (width > height) {
+                            if (width > max_size) {
+                                height *= max_size / width;
+                                width = max_size;
+                            }
+                        } else {
+                            if (height > max_size) {
+                                width *= max_size / height;
+                                height = max_size;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+                        var dataUrl = canvas.toDataURL('image/jpeg');
+                        var resizedImage = dataURLToBlob(dataUrl);
+                        var myFile = blobToFile(resizedImage, file.name);
+                        filesToUpload1.push(myFile);
+                        canvas = null;
+                        image = null;
+                    };
+                };
+            }
         }
     </script>
 </body>
