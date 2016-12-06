@@ -53,11 +53,11 @@
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect" style="float: right;" onclick="document.getElementById('files').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files" name="files" type="file" onchange="fileChangeEvent(this)" />
                 </div>
-                 <div class="row">
+ <%--                <div class="row">
                     <label for="btnSelect1" class="col-xs-4 formLabel" style="margin-left: 0; margin-right: 0;">身份证说明书半身<span id="isUploaded1" style="display: none; color: #fe8f5e; position: absolute; right: -20px;">√</span></label>
                     <a href="#" class="btn btn-primary btn-sm col-xs-8" id="btnSelect1" style="float: right;" onclick="document.getElementById('files1').click();">点击选择图片(小于500k)</a>
                     <input style="display: none;" id="files1" name="files1" type="file" onchange="fileChangeEvent1(this)" />
-                </div>
+                </div>--%>
                 <div class="row">
                     <img id="captcha" style="height: 30px; line-height: 30px;" class="col-xs-4" />
                     <input type="text" id="num" name="num" class="col-xs-4 formLabel" placeholder="请输入验证码" />
@@ -248,9 +248,11 @@
                 for (var i = 0; i < filesToUpload.length; i++) {
                     formData.append("attach", filesToUpload[i]);
                 }
-                for (var i = 0; i < filesToUpload1.length; i++) {
-                    formData.append("bankPicture", filesToUpload1[i]);
-                }
+
+                //for (var i = 0; i < filesToUpload1.length; i++) {
+                //    formData.append("bankPicture", filesToUpload1[i]);
+                //}
+
                 //formData.append("attach", document.getElementById("files").files[0]);
                 //formData.append("bankPicture", document.getElementById("files1").files[0]);
                 formData.append("method", "dataInfo");
@@ -466,57 +468,57 @@
             $("#isUploaded").show();
         }
 
-        function fileChangeEvent1(fileInput) {
-            // this.isUploaded = true;
-            // this.filesToUpload = [];
+        //function fileChangeEvent1(fileInput) {
+        //    // this.isUploaded = true;
+        //    // this.filesToUpload = [];
 
-            for (var i = 0; i < fileInput.files.length; i++) {
-                if (fileInput.files[i].size > (1024 * 500)) {
-                    resizeFile1(fileInput.files[i]);
-                }
-                else {
-                    filesToUpload1.push(fileInput.files[i]);
-                }
-            }
-            $("#isUploaded1").show();
-        }
+        //    for (var i = 0; i < fileInput.files.length; i++) {
+        //        if (fileInput.files[i].size > (1024 * 500)) {
+        //            resizeFile1(fileInput.files[i]);
+        //        }
+        //        else {
+        //            filesToUpload1.push(fileInput.files[i]);
+        //        }
+        //    }
+        //    $("#isUploaded1").show();
+        //}
 
-        function resizeFile1(file) {
-            var reader = new FileReader();
-            reader.readAsDataURL(file);
-            var image = document.createElement('img');
-            reader.onload = function (e) {
-                {
-                    image.src = e.target.result;
-                    image.onload = function () {
-                        var canvas = document.createElement('canvas'),
-                                     max_size = 544,
-                                     width = image.width,
-                                     height = image.height;
-                        if (width > height) {
-                            if (width > max_size) {
-                                height *= max_size / width;
-                                width = max_size;
-                            }
-                        } else {
-                            if (height > max_size) {
-                                width *= max_size / height;
-                                height = max_size;
-                            }
-                        }
-                        canvas.width = width;
-                        canvas.height = height;
-                        canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-                        var dataUrl = canvas.toDataURL('image/jpeg');
-                        var resizedImage = dataURLToBlob(dataUrl);
-                        var myFile = blobToFile(resizedImage, file.name);
-                        filesToUpload1.push(myFile);
-                        canvas = null;
-                        image = null;
-                    };
-                };
-            }
-        }
+        //function resizeFile1(file) {
+        //    var reader = new FileReader();
+        //    reader.readAsDataURL(file);
+        //    var image = document.createElement('img');
+        //    reader.onload = function (e) {
+        //        {
+        //            image.src = e.target.result;
+        //            image.onload = function () {
+        //                var canvas = document.createElement('canvas'),
+        //                             max_size = 544,
+        //                             width = image.width,
+        //                             height = image.height;
+        //                if (width > height) {
+        //                    if (width > max_size) {
+        //                        height *= max_size / width;
+        //                        width = max_size;
+        //                    }
+        //                } else {
+        //                    if (height > max_size) {
+        //                        width *= max_size / height;
+        //                        height = max_size;
+        //                    }
+        //                }
+        //                canvas.width = width;
+        //                canvas.height = height;
+        //                canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        //                var dataUrl = canvas.toDataURL('image/jpeg');
+        //                var resizedImage = dataURLToBlob(dataUrl);
+        //                var myFile = blobToFile(resizedImage, file.name);
+        //                filesToUpload1.push(myFile);
+        //                canvas = null;
+        //                image = null;
+        //            };
+        //        };
+        //    }
+        //}
     </script>
 </body>
 </html>

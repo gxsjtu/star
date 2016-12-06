@@ -134,7 +134,7 @@ public class Handler : IHttpHandler
             string url = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=eidtFirm";
 
             HttpPostedFile files = context.Request.Files["attach"];
-            HttpPostedFile bankPicture = context.Request.Files["bankPicture"];
+            //HttpPostedFile bankPicture = context.Request.Files["bankPicture"];
             HttpCookieCollection hcc = context.Request.Cookies;
             cookies = new CookieCollection();
             for (int i = 0; i < hcc.Count; i++)
@@ -146,8 +146,10 @@ public class Handler : IHttpHandler
                 c.Path = "/SelfOpenAccount";
                 cookies.Add(new Cookie(hcc[i].Name, hcc[i].Value));
             }
-            HttpPostedFile[] arrFile = new HttpPostedFile[] { files,bankPicture};
-            string[] fileParams = new string[] { "attach", "bankPicture" };
+            //HttpPostedFile[] arrFile = new HttpPostedFile[] { files, bankPicture };
+            HttpPostedFile[] arrFile = new HttpPostedFile[] { files };
+            string[] fileParams = new string[] { "attach" };
+            //string[] fileParams = new string[] { "attach", "bankPicture" };
             HttpWebResponse response = CreatePostHttpResponseWithFile(url, parameters, arrFile, fileParams, cookies, "z.hbyoubi.com");
             string html = "";
             Stream stream = null;
@@ -451,7 +453,8 @@ public class Handler : IHttpHandler
             ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
             request = WebRequest.Create(url) as HttpWebRequest;
             request.ProtocolVersion = HttpVersion.Version10;
-            request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            request.Accept = "*/*";
+            //request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
             request.KeepAlive = true;
             request.Host = "z.hbyoubi.com:16919";
             request.Referer = "https://z.hbyoubi.com:16919/SelfOpenAccount/firmController.fir?funcflg=goNotice";
